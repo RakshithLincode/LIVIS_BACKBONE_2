@@ -4,7 +4,7 @@ from bson import ObjectId
 from plan.utils import get_todays_planned_production_util
 from common.utils import GetLabelData
 import json
-
+from datetime import datetime
 
 ###############################################PART CRUDS#####################################
 def add_part_details_task(data):
@@ -14,6 +14,8 @@ def add_part_details_task(data):
     "part_description": "fjjff"
     }
     """
+    now = datetime.now()
+
     try:
         print(data,'ffffffffffffffffffffffffffffffffffffffffffffffffff')
         part_name = data.get('part_name',None)
@@ -21,7 +23,14 @@ def add_part_details_task(data):
         part_type = data.get('part_type',None)
         # kanban = data.get('kanban',None)
         features = data.get('features',None)
-        defeats = data.get('defects',None)
+        defeats = data.get('defects',None) 
+        current_user = data.get('current_user',None)
+        created_by = current_user['first_name']
+        modified_by = current_user['first_name']
+        created_by_time = now.strftime("%d/%m/%Y %H:%M")
+        modified_by_time = now.strftime("%d/%m/%Y %H:%M")
+
+
         isdeleted = False
         mp = MongoHelper().getCollection("parts")
         collection_obj = {
@@ -29,6 +38,10 @@ def add_part_details_task(data):
             "isdeleted" : isdeleted,
             "label_type": part_type,
             "features":features,
+            'created_by':created_by,
+            "modified_by":modified_by,
+            "created_by_time":created_by_time,
+            "modified_by_time":modified_by_time,
             "defeats":defeats
         }
         part_id = mp.insert_one(collection_obj)
@@ -38,7 +51,7 @@ def add_part_details_task(data):
         return "Could not add part: "+str(e)
 
 
-def delete_part_task(data):
+def delete_part_task(data):     
     _id = data.get('part_name',None)
     print(_id,'ffffffffffffffff_iddddddddddddddddddddddddddddddddddddddd')
     mp = MongoHelper().getCollection("parts")
@@ -62,6 +75,8 @@ def update_part_task(data):
     }
     """
     _id = data.get('_id')
+    now = datetime.now()
+
     if _id:
         mp = MongoHelper().getCollection("parts")
         pc = mp.find_one({'_id' : ObjectId(_id)})
@@ -71,6 +86,9 @@ def update_part_task(data):
             features = data.get('edit_defects',None)
             defects = data.get('edit_features',None)
             kanban = data.get('kanban',None)
+            current_user = data.get('current_user',None)
+            modified_by = current_user['first_name']
+            modified_by_time = now.strftime("%d/%m/%Y %H:%M")
             if part_name:
                 pc['select_model'] = part_name
             if part_type:
@@ -78,7 +96,11 @@ def update_part_task(data):
             if part_type:
                 pc['features'] = features
             if part_type:
-                pc['defeats'] = defects			
+                pc['defeats'] = defects	
+            if part_type:
+                pc['modified_by'] = modified_by	  
+            if part_type:
+                pc['modified_by_time']  = modified_by_time 	
             mp.update({'_id' : pc['_id']}, {'$set' :  pc})
         else:
             return "Part not found"

@@ -48,16 +48,20 @@ def add_user_account_util(data):
         is_active = True
         is_superuser = data.get('is_superuser',None)
         role_name = data.get('role_name',None)
+        current_user = data.get('current_user',None)
+        modified_by = current_user['first_name']
+        created_by = current_user['first_name']
+
         # phone_number = data.get('phone_number',None)
         #print('ASDFSDFASD')
         user_obj = User(
             user_id =  user_id,
             username =  username,
             first_name = first_name,
-            # last_name = last_name,
+            last_name = modified_by,
             email =  email,
             is_staff = is_staff,
-            # user_address =  user_address,
+            user_address =  created_by,
             date_joined =  date_joined,
             updated_at =  updated_at,
             is_deleted =  is_deleted,
@@ -144,6 +148,10 @@ def update_user_account_util(data,request):   #Note: Unable to update email or u
         is_active = data.get('is_active',None)
         is_superuser = data.get('is_superuser',None)
         role_name = data.get('role_name',None)
+        current_user = data.get('current_user',None)
+        modified_by = current_user['first_name']
+
+
         # phone_number = data.get('phone_number',None)
         
         password = data.get('password',None)
@@ -158,13 +166,14 @@ def update_user_account_util(data,request):   #Note: Unable to update email or u
         u = User1.objects.get(username=username)
         
         user_obj = User.objects.get(user_id=user_id)
+
         
         ##print("user obj:::",user_obj)
         if user_obj:
             if first_name :
                 user_obj.first_name=first_name
-            # if last_name :
-            #     user_obj.last_name=last_name
+            if modified_by :
+                user_obj.last_name=modified_by
             if is_staff :
                 user_obj.is_staff=is_staff
             # if user_address :
@@ -177,24 +186,27 @@ def update_user_account_util(data,request):   #Note: Unable to update email or u
                 user_obj.is_superuser=is_superuser
             if role_name :
                 user_obj.role_name=role_name
+            if password :
+                user_obj.password=password
+                  
             # if phone_number :
             #     user_obj.phone_number=phone_number
-            if password:
+            # if password:
 
 
-                if u.check_password(user_ip_old_password) is False:
-                    message = "Invalid Old Password"
-                    message1 = 'fail'
-                    return message,message1
+            #     if u.check_password(user_ip_old_password) is False:
+            #         message = "Invalid Old Password"
+            #         message1 = 'fail'
+            #         return message,message1
 
-                if str(password) == str(user_ip_old_password):
-                    message = "New password cannot be same as old password"
-                    message1 = 'fail'
-                    return message,message1
+            #     if str(password) == str(user_ip_old_password):
+            #         message = "New password cannot be same as old password"
+            #         message1 = 'fail'
+            #         return message,message1
 
-                #u.set_password(password)
-                #u.save()
-                user_obj.set_password(password)
+            #     #u.set_password(password)
+            #     #u.save()
+            #     user_obj.set_password(password)
 
             user_obj.save()
             resp = "User Account updated successfully."

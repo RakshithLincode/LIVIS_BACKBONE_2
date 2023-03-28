@@ -15,11 +15,13 @@ urlpatterns = [
     re_path(r'^get_data_stream/(?P<cameraid>[A-Za-z0-9-._]+)/$', views.get_data_stream),
     re_path(r'^get_output_stream/(?P<cameraid>[A-Za-z0-9-._]+)/$', views.get_output_stream),
     re_path(r'^getRedZoneList/', views.getRedZoneList),
+    re_path(r'^get_health_check/$', views.get_health_check_view),
     re_path(r'^flag/$', views.flag),
-
+    re_path(r'^retry_inspection/$', views.retry_inspection_view),
 
     ###################
     re_path(r'^save_inspection_details/$', views.save_inspection_details_view),
+    re_path(r'^save_retry_details/$', views.save_retry_details_view),
     re_path(r'^get_metrics/(?P<inspection_id>[A-Za-z0-9-_]+)', views.get_metrics_view),
     # re_path(r'^start_inspection/$', views.start_inspection_view),
     re_path(r'^get_ui_trigger/$', views.start_inspection_view),

@@ -25,7 +25,6 @@ def getDefectList(request, inspectionid):
         return HttpResponse( {response}, status=status_code)
     else:
         return HttpResponse(json.dumps(response, cls=Encoder), content_type="application/json") 
-
 # @api_view(['GET'])
 # @renderer_classes((TemplateHTMLRenderer,JSONRenderer))
 # @csrf_exempt
@@ -51,7 +50,18 @@ def save_inspection_details_view(request):
     else:
         return HttpResponse(json.dumps(response, cls=Encoder), content_type="application/json") 
 
-
+@api_view(['POST'])
+@renderer_classes((TemplateHTMLRenderer,JSONRenderer))
+@csrf_exempt
+@permission_classes((AllowAny,))
+def save_retry_details_view(request):
+    data = request.data
+    from inspection.utils import save_retry_details_util
+    response,status_code = save_retry_details_util(data)
+    if status_code != 200:
+        return HttpResponse( {response}, status=status_code)
+    else:
+        return HttpResponse(json.dumps(response, cls=Encoder), content_type="application/json") 
 
 @api_view(['POST'])
 @csrf_exempt
@@ -131,6 +141,7 @@ def get_camera_urls(request):
 
     return HttpResponse(json.dumps({'data': url_list}), content_type="application/json")
 
+# retry_inspection_view
 
 @api_view(['GET'])
 @renderer_classes((TemplateHTMLRenderer,JSONRenderer))
@@ -145,6 +156,13 @@ def get_running_process_views(request):
     else:
         return HttpResponse(json.dumps(response, cls=Encoder), content_type = "application/json")
 
+@api_view(['GET'])
+@csrf_exempt
+@permission_classes((AllowAny,))
+def get_health_check_view(request):
+    camera = CacheHelper().get_json('camera_health_check')
+    plc = CacheHelper().get_json('plc_health_check')
+    return HttpResponse(json.dumps({'camera': True,'plc':True}), content_type="application/json")  
 
 @api_view(['POST'])
 @renderer_classes((TemplateHTMLRenderer,JSONRenderer))
@@ -214,7 +232,20 @@ def start_inspection_view(request):
         return HttpResponse( {response}, status=status_code)
     else:
         return HttpResponse(json.dumps(response, cls=Encoder), content_type="application/json")
-
+    
+@api_view(['GET'])
+@renderer_classes((TemplateHTMLRenderer,JSONRenderer))
+@csrf_exempt
+@permission_classes((AllowAny,))
+def retry_inspection_view(request):
+    # data = json.loads(request.body)
+    # print(data,'hhhhhhhhhhhhhhhhhhhgbggggggggggggggggggggggggggggggggggggggggg')
+    from inspection.utils import retry_inspection_util
+    response,status_code = retry_inspection_util()
+    if status_code != 200:
+        return HttpResponse( {response}, status=status_code)
+    else:
+        return HttpResponse(json.dumps(response, cls=Encoder), content_type="application/json")    
 
 @api_view(['POST'])
 @renderer_classes((TemplateHTMLRenderer,JSONRenderer))
